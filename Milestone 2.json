@@ -1,0 +1,1525 @@
+{
+  "name": "Milestone",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH SUPERVISOR AGENT TERBAIK YANG BERTUGAS MENGKLASIFIKASIKAN SETIAP PERTANYAAN ATAU PERNYATAAN USER KE DALAM HANYA SATU DARI ENAM KATEGORI:\n\njob_vacancy – Untuk pertanyaan tentang daftar lowongan pekerjaan atau detail spesifik posisi yang tersedia.\n\njob_matching – Untuk permintaan pencocokan pekerjaan yang sesuai dengan pengalaman user atau isi CV berbasis teks maupun gambar. Hanya mencocokkan dengan lowongan yang ada.\n\nmanual – Untuk pertanyaan tentang cara menggunakan chatbot, termasuk informasi bahwa chatbot hanya bisa mencari lowongan, melakukan job matching, dan simulasi interview berdasarkan lowongan yang tersedia.\n\nother – Untuk semua topik di luar lima kategori lainnya, termasuk pertanyaan atau pernyataan tentang ekspektasi gaji atau isu ketenagakerjaan.\n\ngreetings – Untuk sapaan, salam pembuka, atau perkenalan diri.\n\ninterview – Untuk permintaan melakukan simulasi wawancara kerja berdasarkan lowongan yang tersedia serta seluruh percakapan lanjutan selama sesi interview berlangsung, termasuk jawaban interviewee terhadap pertanyaan yang diberikan.\n\nINSTRUKSI\nBACA dan PAHAMI maksud input user.\n\nKLASIFIKASIKAN ke SATU kategori saja.\n\nOUTPUT HANYA boleh berupa salah satu dari:\n\"job_vacancy\", \"job_matching\", \"manual\", \"other\", \"greetings\", \"interview\".\n\nJANGAN memberikan penjelasan tambahan.\n\nJANGAN mengkategorikan percakapan atau jawaban yang merupakan bagian dari sesi interview ke \"other\" atau kategori lain selain \"interview\".\n\nCHAIN OF THOUGHTS\nUNDERSTAND – Pahami konteks utama input user.\n\nIDENTIFY – Cari kata kunci atau maksud yang mengarah ke kategori yang ada.\n\nBREAK DOWN – Pisahkan kemungkinan kategori berdasarkan definisi.\n\nANALYZE – Gunakan konteks percakapan sebelumnya untuk memastikan kategori benar, terutama untuk sesi interview multi-turn.\n\nEDGE CASES – Jika ada potensi benturan antara “other” dan “interview”, pilih \"interview\".\n\nFINAL ANSWER – Keluarkan hanya label kategori.\n\nWHAT NOT TO DO\n❌ JANGAN mengeluarkan output selain enam kategori yang diizinkan.\n\n❌ JANGAN memberikan alasan, penjelasan, atau ringkasan input user.\n\n❌ JANGAN menggabungkan dua kategori.\n\n❌ JANGAN memasukkan jawaban interview ke \"other\".\n\n❌ JANGAN menjawab pertanyaan tentang LLM atau teknologi yang digunakan.\n\nFEW-SHOT EXAMPLES\nInput: \"Ada lowongan software engineer di perusahaan ini?\"\nOutput: \"job_vacancy\"\n\nInput: \"Menurut pengalaman saya di sales, pekerjaan apa yang cocok?\"\nOutput: \"job_matching\"\n\nInput: \"Bagaimana cara menggunakan chatbot ini?\"\nOutput: \"manual\"\n\nInput: \"Berapa gaji rata-rata untuk posisi ini?\"\nOutput: \"other\"\n\nInput: \"Halo, selamat pagi!\"\nOutput: \"greetings\"\n\nInput: \"Saya mau latihan interview untuk posisi marketing manager\"\nOutput: \"interview\"\n\nInput: \"Bisa interview simulasi untuk posisi customer service?\"\nOutput: \"interview\"\n\nInput: \"Saya memiliki pengalaman 3 tahun di bidang ini dan mampu bekerja di bawah tekanan\" (jawaban interview)\nOutput: \"interview\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        340,
+        -80
+      ],
+      "id": "a58f72b8-e03b-4d45-8bee-1279d863c8a2",
+      "name": "Supervisor"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "job_vacancy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0f74efde-31a2-45a0-b821-7729bc5e7f55"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f89a7155-b730-45c1-84ea-0cfc1ddfafff",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "job_matching",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4417901c-5491-473f-98ac-2a2bc451be69",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "greetings",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8572a166-0655-4750-92b6-f702526d1dff",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "manual",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3c29c464-9d4a-4431-a746-082940d31406",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "495a3332-2d87-4248-ae33-d17474b4b46a",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "interview",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        660,
+        -140
+      ],
+      "id": "1ec35228-6816-4d75-8b25-03985f476a8e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WAHA Trigger').item.json.session }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        600,
+        560
+      ],
+      "id": "fab1f7cf-ba15-4cb4-9e38-d6a89af73727",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -80
+      ],
+      "id": "ce276c35-9c64-457d-92f6-7ad37968ea6d",
+      "name": "Greetings"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.text }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH MANUAL AGENT, AGEN AHLI YANG BERTUGAS MEMBERIKAN PETUNJUK PENGGUNAAN CHATBOT SECARA JELAS, RINGKAS, DAN KONTEKSTUAL. CHATBOT INI HANYA MEMILIKI DUA FUNGSI UTAMA:\n\nMENCARI DAN MENAMPILKAN LOWONGAN KERJA\n\nMEMBANTU USER MENEMUKAN PEKERJAAN YANG COCOK (JOB MATCHING)\n\nBerdasarkan penjelasan pengalaman, keahlian, atau latar belakang yang disampaikan user secara teks\n\nBerdasarkan informasi dari CV berbasis teks maupun CV berbasis gambar yang dapat dibaca oleh sistem\n\nINSTRUKSI\nBERIKAN petunjuk yang jelas tentang bagaimana cara menggunakan kedua fitur utama chatbot\n\nPANDU user untuk memberikan informasi yang tepat agar pencarian lowongan atau job matching optimal\n\nJAWAB hanya seputar cara penggunaan chatbot, bukan isi lowongan atau rekomendasi pekerjaan itu sendiri\n\nGUNAKAN bahasa yang ramah, sopan, dan mudah dipahami\n\nCHAIN OF THOUGHTS\nUNDERSTAND – Kenali bahwa user meminta petunjuk penggunaan\n\nBASICS – Tentukan fitur mana yang sedang ditanyakan (cari lowongan atau job matching)\n\nBREAK DOWN – Susun langkah-langkah penggunaan dengan runtut dan singkat\n\nANALYZE – Sesuaikan penjelasan dengan kebutuhan spesifik user\n\nBUILD – Berikan instruksi berurutan dan jelas\n\nEDGE CASES – Jika pertanyaan umum, jelaskan kedua fitur utama sekaligus\n\nFINAL ANSWER – Jawab dengan panduan konkret yang mudah diikuti\n\nWHAT NOT TO DO\n❌ JANGAN memberikan informasi isi lowongan kerja secara langsung\n\n❌ JANGAN memberikan rekomendasi pekerjaan — itu tugas Job Matching Agent\n\n❌ JANGAN menjawab pertanyaan tentang teknologi atau model LLM yang digunakan\n\n❌ JANGAN memberikan instruksi yang membingungkan atau tidak relevan\n\nFEW-SHOT EXAMPLES\nInput: \"Bagaimana cara menggunakan chatbot ini?\"\nOutput:\n\"Chatbot ini punya dua fitur utama:\n\nCari lowongan kerja – Cukup ketik 'Cari lowongan' atau sebutkan posisi/bidang yang diinginkan. Chatbot akan menampilkan lowongan yang tersedia.\n\nJob matching – Anda bisa ceritakan pengalaman kerja, keahlian, atau latar belakang pendidikan Anda. Bisa juga kirim CV Anda, baik berbentuk teks maupun gambar. Chatbot akan mencocokkan dengan lowongan yang ada.\"\n\nInput: \"Bagaimana cara melihat daftar lowongan kerja?\"\nOutput:\n\"Ketik 'Cari lowongan kerja', lalu tambahkan posisi atau bidang yang Anda minati. Chatbot akan menampilkan lowongan yang relevan.\"\n\nInput: \"Apakah saya harus tulis pengalaman kerja saya untuk job matching?\"\nOutput:\n\"Ya, Anda bisa langsung tulis pengalaman dan keahlian Anda, atau kirim CV Anda (teks atau gambar). Chatbot akan mencocokkan dengan lowongan yang tersedia.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        60
+      ],
+      "id": "9392e613-ceab-4302-bf30-71d6946a7d8b",
+      "name": "Manual"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -360
+      ],
+      "id": "b116685c-68db-463c-b40f-277c90479bfa",
+      "name": "Job Vacancy"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Job vacancy vector DB",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "spirited-eucalyptus",
+          "mode": "list",
+          "cachedResultName": "spirited-eucalyptus"
+        },
+        "includeDocumentMetadata": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        560
+      ],
+      "id": "a7514cab-aa92-4f40-949c-5b7dd4d9f3b1",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "a3ny7UTaEMSsvP4o",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Document Loader",
+        "height": 540,
+        "width": 900
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        280,
+        800
+      ],
+      "id": "63fec11f-4fd6-4bc3-92dc-3abb2c62c0fc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "loader": "pdfLoader",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        1040
+      ],
+      "id": "0a30b8ba-8d90-40fa-9ca4-f93970562988",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 500,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1180
+      ],
+      "id": "a2742ec5-9a09-446f-ada3-20e09401f3f3",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "https://drive.google.com/file/d/1UsggtBrNBJ5eDLepzSzxEoGWX7qK0lDQ/view?usp=sharing",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        560,
+        880
+      ],
+      "id": "d75679c8-6e67-46b3-85b2-8df4d6dca24e",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BDGHmNTzR91c0ZL4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        360,
+        880
+      ],
+      "id": "3ba6b720-5ad0-4bdf-b319-2d78f4df1378",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "spirited-eucalyptus",
+          "mode": "list",
+          "cachedResultName": "spirited-eucalyptus"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        780,
+        880
+      ],
+      "id": "649cbd57-6d50-4e24-8a74-d765ecb4812f",
+      "name": "Document Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "a3ny7UTaEMSsvP4o",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -220
+      ],
+      "id": "b1ed1880-13a2-48b7-ac06-20ceded61d86",
+      "name": "Job Matching"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.text }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH AI AGENT UNTUK TOPIK \"OTHER\" YANG BERTUGAS MERESPON INPUT USER YANG TIDAK MASUK KE KATEGORI:\n\n\"job_vacancy\" (pertanyaan tentang lowongan pekerjaan yang ada)\n\n\"job_matching\" (pencocokan pekerjaan berdasarkan pengalaman user atau CV berbasis teks/gambar, hanya dengan lowongan yang tersedia)\n\n\"manual\" (cara menggunakan chatbot dan fitur-fiturnya)\n\n\"greetings\" (sapaan atau perkenalan)\n\n\"interview\" (permintaan atau percakapan simulasi wawancara kerja serta jawaban interviewee)\n\nRUANG LINGKUP \"OTHER\"\nPertanyaan atau pernyataan umum di luar fungsi chatbot.\n\nTopik tentang ekspektasi gaji atau isu/hukum ketenagakerjaan.\n\nTopik non-pekerjaan seperti berita, teknologi umum, cuaca, hiburan, hobi, dsb.\n\nATURAN PENTING\n❌ JANGAN mengklasifikasikan atau merespons input yang merupakan bagian dari sesi interview, termasuk jawaban interviewee. Itu harus diarahkan ke agent \"interview\".\n\n❌ JANGAN memberikan informasi atau menjawab pertanyaan tentang LLM atau teknologi model yang digunakan.\n\n❌ JANGAN memberikan informasi terkait gaji atau isu ketenagakerjaan.\n\n✅ Jawab secara sopan, relevan, dan ringkas sesuai konteks topik.\n\nCHAIN OF THOUGHTS\nUNDERSTAND – Pahami maksud input user.\n\nVERIFY CATEGORY – Pastikan input bukan bagian dari kategori job_vacancy, job_matching, manual, greetings, atau interview.\n\nANALYZE TOPIC – Tentukan apakah topik sesuai dengan ruang lingkup \"other\".\n\nEDGE CASES – Jika terdeteksi percakapan adalah bagian dari interview, hentikan dan arahkan ke agent interview.\n\nFINAL RESPONSE – Berikan jawaban yang relevan, jelas, dan sopan."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        200
+      ],
+      "id": "4d447b61-dbf7-41a9-bd8b-ccef4fab7e0c",
+      "name": "Other"
+    },
+    {
+      "parameters": {},
+      "type": "@devlikeapro/n8n-nodes-waha.wahaTrigger",
+      "typeVersion": 202502,
+      "position": [
+        -1460,
+        60
+      ],
+      "id": "1c7c3acc-3659-4b69-b0db-3635719305f4",
+      "name": "WAHA Trigger",
+      "webhookId": "0412a446-cac8-4e94-a383-68bc5d4d305b"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "text": "={{ $('Code').item.json.output }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        2080,
+        40
+      ],
+      "id": "17e2f5c2-5608-474c-ae69-8fa1a99b316f",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Stop Typing",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        2620,
+        -60
+      ],
+      "id": "9cbd1467-88d8-4b69-a19b-4b8fe9cc8379",
+      "name": "Stop Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  if (item) {\n    return item;\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        -80
+      ],
+      "id": "b23dee12-2b50-4c2c-8323-f4a4542133aa",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {
+          "dimensions": 1024
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        1140
+      ],
+      "id": "24317cd2-713a-4284-8e9b-433630186310",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "bs9XkEgcm8eQrsFX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        340,
+        560
+      ],
+      "id": "a1c73ede-abe2-4bed-9a2c-a30351581338",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bs9XkEgcm8eQrsFX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Voice",
+        "session": "={{ $('WAHA Trigger').item.json.session }}",
+        "chatId": "={{ $('WAHA Trigger').item.json.payload.from }}",
+        "file": "={\n  \"mimetype\": \"audio/ogg; codecs=opus\",\n  \"filename\": \"voice.mp3\",\n  \"data\": \"{{ $json.file.data }}\"\n}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        2380,
+        -200
+      ],
+      "id": "5fe31029-0240-45b7-b859-15cf693edfaa",
+      "name": "Send an voice message",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "NPDHDOOQCSyifTJZOe6J",
+          "mode": "list",
+          "cachedResultName": "Nilasari"
+        },
+        "text": "={{ $('Code').item.json.output }}",
+        "additionalOptions": {
+          "outputFormat": "opus_48000_32",
+          "languageCode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        -200
+      ],
+      "id": "facf5db5-8bc4-4a49-8b79-ae2fbf753582",
+      "name": "Convert text to speech",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "NAFAJokQCXhePotu",
+          "name": "ElevenLabs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.payload.media.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wahaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -580,
+        -260
+      ],
+      "id": "c0ee25cf-65ee-4bd6-9a29-564bf82beaf2",
+      "name": "Download Image",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.payload.media.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wahaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -580,
+        -80
+      ],
+      "id": "3142667c-387a-4456-b267-c5b411488bd4",
+      "name": "Download Audio",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.payload.media.mimetype }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "6c2eadd2-f4af-490c-8504-290f17b2ff2c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5033c8a5-b6ae-48ab-ab33-be090e237676",
+                    "leftValue": "={{ $json.payload.media.mimetype }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -800,
+        -100
+      ],
+      "id": "d42674c8-fde9-4bb0-9e45-cffd9450859c",
+      "name": "Media Type"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "02dd3a0d-c13f-4545-83c9-6a7e2e797ddf",
+              "leftValue": "={{ $json.payload.hasMedia }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1080,
+        80
+      ],
+      "id": "9a175108-8a52-466a-a3fd-69bdbcec66dc",
+      "name": "Has Media"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "Deskripsikan gambar berikut",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -380,
+        -260
+      ],
+      "id": "4e9a2dbf-bde4-457f-91ed-9b10e81b5fac",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "bs9XkEgcm8eQrsFX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        -1060,
+        -180
+      ],
+      "id": "65f47c18-aae8-4fb7-a003-730b4632b87f",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0725c9e1-e746-4d7f-be65-60f0f9c7308d",
+              "name": "text",
+              "value": "={{ $('Media Type').item.json.payload.body }}\n\nBerikut deskripsi gambar:\n{{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "dd116bf9-371f-474a-9686-0e05959c1695",
+              "name": "mode",
+              "value": "image",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        -260
+      ],
+      "id": "9be702df-4b6a-4bd1-b4b6-51d5b6f970f5",
+      "name": "Unify Output - Image"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b3ede0ff-38dd-4fd3-a64e-689cf86818cd",
+              "name": "text",
+              "value": "={{ $('Media Type').item.json.payload.body }}\n\nBerikut deskripsi suara:\n{{ $json.text.replace(/[\\n#*_~]/g, '').replace(/\\s+/g, ' ').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "9c077c81-1f08-466a-be40-71c415a49eab",
+              "name": "mode",
+              "value": "speech",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        -80
+      ],
+      "id": "99934480-2400-4fb1-95d8-8892dff3991f",
+      "name": "Unify Output - Audio"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "314865c4-653c-4c6d-ac31-bbafd6be1339",
+              "name": "text",
+              "value": "={{ $json.payload.body }}",
+              "type": "string"
+            },
+            {
+              "id": "8f26c10a-bd1d-4e2b-88e6-b257eaf10a3b",
+              "name": "mode",
+              "value": "text",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        100
+      ],
+      "id": "8e0a1cf5-f915-4e4f-963d-be91943c7062",
+      "name": "Unify Output - Text"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "operation": "speechToText",
+        "additionalOptions": {
+          "languageCode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        -80
+      ],
+      "id": "2e10ed8e-1846-418b-beba-568b4d13706c",
+      "name": "Transcribe audio or video",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "NAFAJokQCXhePotu",
+          "name": "ElevenLabs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.first();\n\n// Ambil binary data (sesuaikan dengan struktur dari debug Anda)\nlet audioBuffer;\n\nif (inputData.binary && inputData.binary.data) {\n    audioBuffer = inputData.binary.data.data;\n} else if (inputData.json) {\n    // Sesuaikan dengan lokasi data yang benar dari hasil debug\n    audioBuffer = inputData.json;\n} else {\n    throw new Error(\"Audio data not found\");\n}\n\nconst base64Audio = audioBuffer.toString('base64');\n\nreturn {\n    json: {\n        session: $('WAHA Trigger').first().json.session,\n        chatId: $('WAHA Trigger').first().json.payload.from,\n        file: {\n            mimetype: \"audio/mpeg\",\n            filename: \"voice.mp3\",\n            data: base64Audio\n        }\n    }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2180,
+        -200
+      ],
+      "id": "94b9c346-7916-4a70-bae1-e35cf5a23b75",
+      "name": "Convert MP3 to base64"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        140,
+        -80
+      ],
+      "id": "faa40acb-e0c4-4aeb-a5f0-99394b5b6646",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Start Typing",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        -1080,
+        260
+      ],
+      "id": "8b149145-cf6a-4fc3-a76b-f331b1829344",
+      "name": "Start Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f6c89950-aa3c-4137-99bb-8f63a1525191",
+              "leftValue": "={{ $('Merge').item.json.mode }}",
+              "rightValue": "speech",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1580,
+        -80
+      ],
+      "id": "9fe8aff7-2f63-4ff3-b4fb-6c6c2eef3406",
+      "name": "Check If Audio"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.text }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH AI INTERVIEW AGENT, AGEN SPESIALIS YANG BERTUGAS MENSIMULASIKAN PROSES WAWANCARA KERJA BERDASARKAN LOWONGAN PEKERJAAN AKTIF YANG TERSEDIA DALAM SISTEM.\n\nHANYA LAKUKAN SIMULASI INTERVIEW JIKA POSISI YANG DIMINTA USER TERDAPAT DALAM LOWONGAN AKTIF.\nJIKA POSISI TIDAK ADA, TOLAK PERMINTAAN SECARA SOPAN dan arahkan user untuk mencari informasi lowongan yang tersedia melalui fitur pencarian lowongan.\n\nINSTRUKSI\nPERIKSA apakah posisi pekerjaan yang diminta ada di database lowongan aktif.\n\nJIKA ADA:\n\nSusun sebuah pertanyaan interview yang relevan dengan posisi dan tingkat kesulitan sesuai level pekerjaan.\n\nAwali dengan salam dan penjelasan bahwa ini adalah simulasi wawancara.\n\nAjukan satu pertanyaan. Lakukan hingga user meminta untuk berhenti\n\nSetelah user meminta untuk berhenti, berikan evaluasi kualitatif (kelebihan, kekurangan, saran).\n\nJIKA TIDAK ADA:\n\nTolak permintaan interview dengan sopan.\n\nJelaskan bahwa posisi tidak tersedia di lowongan aktif.\n\nArahkan user untuk menggunakan fitur pencarian lowongan.\n\nCHAIN OF THOUGHTS\nUNDERSTAND – Identifikasi posisi yang diminta.\n\nBREAK DOWN – Jika ada, susun pertanyaan relevan.\n\nANALYZE – Pastikan variasi pertanyaan mencakup soft skill dan hard skill.\n\nBUILD – Jalankan interview tanya-jawab per langkah.\n\nEVALUATE – Nilai jawaban berdasarkan kelengkapan, relevansi, dan kejelasan.\n\nFINAL ANSWER – Berikan evaluasi kualitatif\n\nWHAT NOT TO DO\n❌ JANGAN melakukan interview untuk posisi yang tidak ada di lowongan aktif.\n\n❌ JANGAN memberikan evaluasi sebelum diminta oleh user.\n\n❌ JANGAN menjawab atas nama user.\n\n❌ JANGAN menjelaskan teknologi atau LLM yang digunakan."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        340
+      ],
+      "id": "9b11d21e-eb68-4841-acf6-e1a9f4eca328",
+      "name": "Interview"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  if (item) {\n    item.json.output = item.json.output\n      .replace(/[\\n#*_~]/g, '')\n      .replace(/\\s+/g, ' ')\n      .trim();\n\n    return item;\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        -200
+      ],
+      "id": "1a82653d-4bf6-4193-8c9f-531bdbf04b2e",
+      "name": "Markdown Cleaner"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Supervisor": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Manual",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Job Vacancy",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Other",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Interview",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Job Vacancy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Job Matching",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Greetings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Manual",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Other",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Interview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "Job Vacancy",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Job Matching",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Other",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Interview",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Document Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Document Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WAHA Trigger": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Has Media",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Start Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Vacancy": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stop Typing": {
+      "main": [
+        []
+      ]
+    },
+    "Job Matching": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Greetings": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Other": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Stop Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Check If Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Document Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Job Vacancy",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Job Matching",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Greetings",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Manual",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Other",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Interview",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert text to speech": {
+      "main": [
+        [
+          {
+            "node": "Convert MP3 to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Media Type": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Media": {
+      "main": [
+        [
+          {
+            "node": "Media Type",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unify Output - Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Transcribe audio or video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Unify Output - Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unify Output - Image": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unify Output - Audio": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Unify Output - Text": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Transcribe audio or video": {
+      "main": [
+        [
+          {
+            "node": "Unify Output - Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert MP3 to base64": {
+      "main": [
+        [
+          {
+            "node": "Send an voice message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        []
+      ]
+    },
+    "Send an voice message": {
+      "main": [
+        [
+          {
+            "node": "Stop Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Audio": {
+      "main": [
+        [
+          {
+            "node": "Markdown Cleaner",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interview": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown Cleaner": {
+      "main": [
+        [
+          {
+            "node": "Convert text to speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Jakarta",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "6249ae22-8e1e-4613-a7e6-571ba41ba0d4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7474950db47794b0fbf4bae4cb0bfe3d09b95a4be0cbaf02a13b44024fbd835a"
+  },
+  "id": "IGVwPbgrEOG8chdA",
+  "tags": []
+}
