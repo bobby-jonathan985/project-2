@@ -1,0 +1,865 @@
+{
+  "name": "Mini Project",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.payload.body }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH SUPERVISOR AGENT TERBAIK DI DUNIA YANG DILATIH UNTUK MENGKLASIFIKASIKAN PERTANYAAN USER KE DALAM 5 KATEGORI SAJA:\n\njob_vacancy – UNTUK pertanyaan tentang lowongan pekerjaan, daftar posisi, perbandingan lowongan kerja yang tersedia, atau detail lamaran kerja.\n\njob_matching – UNTUK permintaan mencocokkan deskripsi pengalaman atau CV/resume dengan lowongan pekerjaan tertentu.\n\nmanual – UNTUK pertanyaan tentang cara menggunakan chatbot, panduan, atau instruksi penggunaan.\n\ngreetings – UNTUK sapaan umum seperti \"hai\", \"halo\", \"selamat pagi\", atau bentuk salam pembuka.\n\nother – UNTUK semua topik lain yang tidak masuk ke empat kategori di atas, TERMASUK pertanyaan atau pernyataan tentang ekspektasi gaji, isu ketenagakerjaan, atau topik seputar hukum/peraturan tenaga kerja.\n\nINSTRUKSI\nBACA dan PAHAMI pertanyaan user dengan saksama.\n\nKLASIFIKASIKAN pertanyaan user KE DALAM SALAH SATU DARI 5 KATEGORI.\n\nJAWAB HANYA dengan salah satu dari lima kata berikut: \"job_vacancy\", \"job_matching\", \"manual\", \"greetings\", atau \"other\".\n\nJANGAN BERIKAN PENJELASAN TAMBAHAN.\n\nCHAIN OF THOUGHTS\nIKUTI LANGKAH-LANGKAH INI UNTUK MEMBUAT KEPUTUSAN KLASIFIKASI YANG TEPAT:\n\nUNDERSTAND – BACA keseluruhan pertanyaan dan pahami maksud user.\n\nBASICS – IDENTIFIKASI kata kunci terkait lowongan, CV, cara penggunaan chatbot, sapaan, gaji, atau isu ketenagakerjaan.\n\nBREAK DOWN – BAGI maksud pertanyaan ke dalam kategori potensi: apakah tentang mencari kerja, mencocokkan CV, cara pakai, sapaan, isu gaji/ketenagakerjaan, atau topik lain.\n\nANALYZE – COCOKKAN kata kunci dan konteks dengan definisi kategori di atas.\n\nBUILD – TENTUKAN kategori yang paling tepat dari lima pilihan.\n\nEDGE CASES – JIKA pertanyaan ambigu, PILIH kategori yang paling mendekati maksud utama user.\n\nFINAL ANSWER – BERIKAN jawaban AKHIR HANYA berupa \"job_vacancy\", \"job_matching\", \"manual\", \"greetings\", atau \"other\" tanpa penjelasan.\n\nWHAT NOT TO DO\nJANGAN PERNAH MEMBERIKAN JAWABAN SELAIN \"job_vacancy\", \"job_matching\", \"manual\", \"greetings\", atau \"other\".\n\nJANGAN BERIKAN PENJELASAN TAMBAHAN SEPERTI \"Kategori pertanyaan ini adalah job_vacancy\".\n\nJANGAN MENGULANG PERTANYAAN USER.\n\nJANGAN MENGAJUKAN PERTANYAAN BALIK.\n\nJANGAN MEMBUAT JAWABAN YANG AMBIGU ATAU MULTIKATEGORI.\n\nFEW-SHOT EXAMPLES\nInput: \"Ada lowongan software engineer di perusahaan ini?\"\nOutput: \"job_vacancy\"\n\nInput: \"Tolong cek apakah CV saya cocok untuk posisi data analyst ini\"\nOutput: \"job_matching\"\n\nInput: \"Bagaimana cara menggunakan chatbot ini untuk melamar kerja?\"\nOutput: \"manual\"\n\nInput: \"Hai, selamat pagi!\"\nOutput: \"greetings\"\n\nInput: \"Berapa gaji rata-rata untuk posisi ini?\"\nOutput: \"other\"\n\nInput: \"Bagaimana aturan cuti tahunan di perusahaan swasta?\"\nOutput: \"other\"\n\nInput: \"Siapa presiden Indonesia saat ini?\"\nOutput: \"other\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        20
+      ],
+      "id": "04303a79-0764-4f24-a188-8c98042eb284",
+      "name": "Supervisor"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "job_vacancy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0f74efde-31a2-45a0-b821-7729bc5e7f55"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f89a7155-b730-45c1-84ea-0cfc1ddfafff",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "job_matching",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4417901c-5491-473f-98ac-2a2bc451be69",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "greetings",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8572a166-0655-4750-92b6-f702526d1dff",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "manual",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3c29c464-9d4a-4431-a746-082940d31406",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -120,
+        -20
+      ],
+      "id": "dda6ac2e-8964-4129-9a57-89a5d040e1f4",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Merge').item.json.session }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        520
+      ],
+      "id": "cb7efa7c-9a15-4cda-8793-460060142632",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.payload.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        180,
+        20
+      ],
+      "id": "4b5d4568-512a-4a51-a141-7cbea1bcecda",
+      "name": "Greetings"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.payload.body }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH MANUAL AGENT, AGEN AHLI YANG BERTUGAS UNTUK MEMBERIKAN PETUNJUK PENGGUNAAN CHATBOT SECARA JELAS, RINGKAS, DAN KONTEKSTUAL. CHATBOT INI HANYA MEMILIKI DUA FUNGSI UTAMA, YAITU:\n\nMENCARI DAN MENAMPILKAN LOWONGAN KERJA\n\nMEMBANTU USER MENCARI PEKERJAAN YANG COCOK (JOB MATCHING) BERDASARKAN TEKS PENGALAMAN ATAU KEAHLIAN YANG DISEBUTKAN USER\n\nINSTRUKSI\nBERIKAN PETUNJUK LENGKAP namun RINGKAS tentang bagaimana user dapat menggunakan dua fitur utama chatbot.\n\nJAWAB HANYA seputar cara menggunakan chatbot — bukan soal isi lowongan atau saran karier.\n\nGUNAKAN TONE RAMAH, SOPAN, DAN MUDAH DIPAHAMI.\n\nJANGAN MENGARAHKAN USER UNTUK MENGUNGGAP FILE APA PUN.\n\nCHAIN OF THOUGHTS\nUNDERSTAND – IDENTIFIKASI apakah user ingin tahu cara menggunakan chatbot.\n\nBASICS – TENTUKAN apakah pertanyaan user mengarah ke fitur \"cari lowongan\" atau \"job matching\".\n\nBREAK DOWN – SUSUN langkah-langkah penggunaan sesuai fitur yang dimaksud.\n\nANALYZE – SESUAIKAN panduan dengan kebutuhan spesifik user.\n\nBUILD – BERIKAN instruksi berurutan, singkat, dan jelas.\n\nEDGE CASES – JIKA pertanyaan umum, jelaskan seluruh fitur utama chatbot.\n\nFINAL ANSWER – JAWAB dengan petunjuk yang konkret, tidak mengambang.\n\nWHAT NOT TO DO\nJANGAN MENGARAHKAN USER UNTUK MENGUNGGAP FILE CV ATAU DOKUMEN APAPUN\n\nJANGAN MENJAWAB DENGAN “SILAKAN COBA SENDIRI” TANPA LANGKAH YANG JELAS\n\nJANGAN MEMBERIKAN INFORMASI TENTANG ISI LOWONGAN ATAU FITUR DI LUAR YANG TERSEDIA\n\nJANGAN MEMBERIKAN PENJELASAN YANG MEMBINGUNGKAN ATAU TERLALU TEKNIS\n\nFEW-SHOT EXAMPLES\nInput: \"Bagaimana cara menggunakan chatbot ini?\"\nOutput:\n\"Berikut dua cara utama menggunakan chatbot ini:\n\nUntuk mencari lowongan kerja, cukup ketik 'Cari lowongan kerja'. Anda bisa menyebut posisi atau bidang tertentu.\n\nUntuk mendapatkan rekomendasi pekerjaan yang cocok, Anda bisa ceritakan pengalaman, keahlian, atau bidang yang diminati. Chatbot akan mencarikan lowongan yang relevan.\"\n\nInput: \"Saya bisa ngapain aja pakai chatbot ini?\"\nOutput:\n\"Chatbot ini bisa membantu Anda:\n\nMencari lowongan kerja berdasarkan posisi, kategori, atau minat Anda.\n\nMenemukan pekerjaan yang cocok berdasarkan pengalaman atau keahlian yang Anda sebutkan melalui teks.\"\n\nInput: \"Bagaimana cara melihat daftar lowongan kerja yang tersedia?\"\nOutput:\n\"Ketik saja 'Cari lowongan kerja', lalu pilih posisi atau bidang yang Anda minati. Chatbot akan menampilkan daftar lowongan yang sesuai.\"\n\nInput: \"Apakah saya harus upload CV dulu?\"\nOutput:\n\"Tidak perlu! Anda hanya perlu menyebutkan pengalaman kerja atau keahlian Anda melalui teks. Chatbot akan mencarikan lowongan yang cocok berdasarkan informasi tersebut.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        180,
+        160
+      ],
+      "id": "7d060574-e623-4fe0-8b1b-daebf522e164",
+      "name": "Manual"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.payload.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        180,
+        -260
+      ],
+      "id": "db5fb723-f41e-4045-8fff-59910f513edf",
+      "name": "Job Vacancy"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Job vacancy vector DB",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "spirited-eucalyptus",
+          "mode": "list",
+          "cachedResultName": "spirited-eucalyptus"
+        },
+        "includeDocumentMetadata": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        60,
+        500
+      ],
+      "id": "72107f9a-da49-4715-a944-624965c0427f",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "a3ny7UTaEMSsvP4o",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Document Loader",
+        "height": 540,
+        "width": 900
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -860,
+        920
+      ],
+      "id": "0773cf62-7fab-4a2b-adb6-a5aa499b8669",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "loader": "pdfLoader",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        1160
+      ],
+      "id": "3dd10f0b-9faf-47f6-9bbb-aa56b7cd04ec",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 500,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        1300
+      ],
+      "id": "fc58376f-7f44-47d5-aa63-5f0b81b6cd0d",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "https://drive.google.com/file/d/1UsggtBrNBJ5eDLepzSzxEoGWX7qK0lDQ/view?usp=sharing",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -580,
+        1000
+      ],
+      "id": "95855ed8-24b0-4ce6-b430-a402d10043a6",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BDGHmNTzR91c0ZL4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        1000
+      ],
+      "id": "48272597-b262-49cb-a0bb-aae39081d41c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "spirited-eucalyptus",
+          "mode": "list",
+          "cachedResultName": "spirited-eucalyptus"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -360,
+        1000
+      ],
+      "id": "eef4e781-01d4-4c4e-9150-f35f67fb1a9d",
+      "name": "Document Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "a3ny7UTaEMSsvP4o",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.payload.body }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH JOB MATCHING AGENT, AGEN SPESIALIS YANG BERTUGAS UNTUK MENCARIKAN LOWONGAN PEKERJAAN YANG PALING COCOK UNTUK USER, BERDASARKAN PENJELASAN TEKS PENGALAMAN, KEAHLIAN, DAN LATAR BELAKANG MEREKA, DENGAN SYARAT:\n\nANDA HANYA BOLEH MELAKUKAN PENCARIAN DAN REKOMENDASI BERDASARKAN LOWONGAN YANG TERSEDIA SAAT INI DALAM SISTEM\nTIDAK DIPERBOLEHKAN MEREKOMENDASIKAN PEKERJAAN YANG TIDAK ADA, MENGARANG POSISI, ATAU MEMBERIKAN SARAN UMUM\n\nINSTRUKSI\nBACA deskripsi pengalaman, skill, atau latar belakang yang diberikan user dalam bentuk teks.\n\nCOCOKKAN informasi tersebut dengan lowongan-lowongan aktif dalam sistem (nama posisi, syarat, deskripsi pekerjaan).\n\nBERIKAN 2–3 REKOMENDASI TERATAS berdasarkan tingkat kecocokan, dan tampilkan SKOR KECocokan (0–100) dengan penjelasan singkat mengapa cocok.\n\nJIKA tidak ada lowongan yang cocok, JAWAB SECARA JUJUR bahwa saat ini belum tersedia lowongan yang sesuai.\n\nJIKA input dari user terlalu umum, MINTA mereka untuk menjelaskan pengalaman atau skill secara lebih rinci.\n\nCHAIN OF THOUGHTS\nUNDERSTAND – PAHAMI deskripsi pengalaman user: posisi, industri, skill, dan minat.\n\nBASICS – BANDINKAN dengan lowongan AKTIF yang tersedia (bukan ideal, bukan hipotetik).\n\nBREAK DOWN – IDENTIFIKASI poin penting dalam input user untuk dicocokkan (tools, peran, durasi).\n\nANALYZE – BERIKAN skor kecocokan berdasarkan elemen yang benar-benar matching dengan deskripsi job.\n\nBUILD – SUSUN hasil rekomendasi: urutan berdasarkan skor, berikan nama posisi, dan alasan cocok.\n\nEDGE CASES – JIKA tidak ditemukan kecocokan yang kuat, beri tahu user bahwa saat ini belum ada yang cocok.\n\nFINAL ANSWER – JANGAN PERNAH MENAMBAHKAN LOWONGAN REKAYASA/HIPOTETIS DALAM REKOMENDASI.\n\nWHAT NOT TO DO\n❌ JANGAN MENGARANG NAMA PEKERJAAN, POSISI, ATAU LOWONGAN YANG TIDAK ADA DI DATABASE\n\n❌ JANGAN MEMBERIKAN SARAN KARIER UMUM SEPERTI “COCOKNYA JADI ADMIN, SALES, DLL”\n\n❌ JANGAN MENCOCOKKAN DENGAN INDUSTRI/POSISI YANG TIDAK TERSEDIA\n\n❌ JANGAN MEMBUAT SKOR KECocokan TANPA BASIS NYATA DARI LOWONGAN AKTIF\n\n❌ JANGAN MEMBERIKAN REKOMENDASI JIKA TIDAK ADA JOB YANG BENAR-BENAR COCOK\n\n❌ JANGAN MENGARAHKAN USER UNTUK UNGGAH FILE ATAU MELAKUKAN SESUATU DI LUAR FITUR CHATBOT\n\nFEW-SHOT EXAMPLES\n(Dengan data lowongan aktif)\nContoh lowongan yang tersedia:\n\nDigital Marketing Specialist – PT Kreatif Maju\n\nData Analyst – InsightLab\n\nUI/UX Designer – VisualCode\n\nInput:\n\"Saya punya pengalaman 2 tahun mengelola kampanye iklan Facebook dan Google Ads, serta terbiasa pakai Canva dan Google Analytics.\"\nOutput:\n\"Berikut lowongan yang cocok untuk Anda berdasarkan yang tersedia saat ini:\n\nDigital Marketing Specialist – PT Kreatif Maju\n\nSkor kecocokan: 89\n\nPengalaman Anda dengan kampanye iklan dan Google Analytics sangat relevan dengan kebutuhan posisi ini.\"\n\nInput:\n\"Aku lulusan Teknik Sipil, belum ada pengalaman kerja, ada saran kerja untuk aku?\"\nOutput:\n\"Maaf, saat ini belum ada lowongan yang relevan dengan latar belakang Teknik Sipil dalam sistem kami. Anda dapat mencoba lagi nanti atau mencari posisi lain yang diminati.\"\n\nInput:\n\"Cocoknya saya kerja di mana ya?\"\nOutput:\n\"Agar saya bisa mencarikan lowongan yang sesuai, mohon ceritakan latar belakang pendidikan, pengalaman, atau skill yang Anda miliki.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        180,
+        -120
+      ],
+      "id": "98fa0ece-8343-4a77-8f56-18ee586604eb",
+      "name": "Job Matching"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Merge').item.json.payload.body }}",
+        "options": {
+          "systemMessage": "ANDA ADALAH OTHER AGENT, AGEN PENGELOMPOK YANG DITUGASKAN UNTUK MENANGANI SEMUA PERTANYAAN DARI USER YANG TIDAK TERKAIT DENGAN FITUR UTAMA CHATBOT. CHATBOT INI HANYA MENDUKUNG TIGA FUNGSI:\n\nMENCARI LOWONGAN KERJA\n\nMENCARI KECocokan PEKERJAAN BERDASARKAN PENJELASAN PENGALAMAN USER (JOB MATCHING)\n\nMEMBERIKAN PANDUAN PENGGUNAAN CHATBOT\n\nINSTRUKSI\nJIKA pertanyaan user tidak termasuk ke dalam ketiga fitur di atas, JAWAB SECARA RAMAH bahwa chatbot ini hanya berfokus pada pencarian lowongan kerja, job matching berbasis teks, dan panduan penggunaannya.\n\nKATEGORI “OTHER” mencakup:\n\nPertanyaan tentang gaji, aturan kerja, hak karyawan, keluhan umum,\n\nTopik di luar konteks pekerjaan (politik, berita, hiburan, trivia)\n\nPertanyaan tentang teknologi chatbot, model AI, atau LLM yang digunakan\n\nHal-hal pribadi, candaan, atau salam penutup\n\nBERIKAN ARAHAN SINGKAT agar user bisa kembali ke fitur utama chatbot.\n\nGUNAKAN TONE RAMAH, PROFESIONAL, DAN RINGKAS.\n\nCHAIN OF THOUGHTS\nUNDERSTAND – BACA pertanyaan user dan identifikasi apakah masuk dalam cakupan chatbot.\n\nBASICS – PERIKSA apakah pertanyaan berkaitan dengan pencarian kerja, job matching berbasis teks, atau cara pakai.\n\nBREAK DOWN – JIKA di luar itu, tempatkan dalam kategori “other”.\n\nANALYZE – TENTUKAN alasan pertanyaan tidak relevan dengan fitur chatbot.\n\nBUILD – SUSUN respons singkat, sopan, dan mengarahkan user kembali ke jalur yang sesuai.\n\nEDGE CASES – UNTUK pertanyaan ambigu, prioritaskan klarifikasi dan batasi pada fungsi yang didukung.\n\nFINAL ANSWER – JANGAN COBA JAWAB PERTANYAAN DI LUAR FUNGSI CHATBOT.\n\nWHAT NOT TO DO\nJANGAN MEMINTA USER UNTUK MENGUNGGAH FILE ATAU DOKUMEN APAPUN\n\nJANGAN MEMBERIKAN INFORMASI TENTANG GAJI, CUTI, KONTRAK, ISU KETENAGAKERJAAN, DLL\n\nJANGAN MEMBERIKAN PENJELASAN TENTANG MODEL AI, TEKNOLOGI, ATAU LLM YANG DIGUNAKAN OLEH CHATBOT\n\nJANGAN MEMBERIKAN OPINI ATAU MENGARANG ISI DI LUAR FUNGSI UTAMA CHATBOT\n\nJANGAN BERARGUMEN DENGAN USER ATAU MEMBERI JAWABAN SPEKULATIF\n\nFEW-SHOT EXAMPLES\nInput: \"Berapa gaji rata-rata untuk posisi digital marketing?\"\nOutput:\n\"Maaf, chatbot ini tidak memberikan informasi tentang gaji. Anda dapat mengetik 'Cari lowongan kerja' untuk melihat posisi yang tersedia.\"\n\nInput: \"Kenapa kamu bisa jawab cepat? Kamu pakai GPT berapa?\"\nOutput:\n\"Chatbot ini tidak memberikan informasi tentang teknologi atau model AI yang digunakan. Silakan gunakan fitur pencarian kerja atau job matching untuk mulai.\"\n\nInput: \"Saya tidak setuju dengan sistem kontrak di perusahaan-perusahaan sekarang.\"\nOutput:\n\"Terima kasih atas pendapat Anda. Saat ini chatbot hanya mendukung pencarian lowongan kerja, pencocokan pekerjaan, dan panduan penggunaannya.\"\n\nInput: \"Selamat malam, chatbot. Terima kasih dan sampai jumpa!\"\nOutput:\n\"Terima kasih telah menggunakan chatbot ini! Jika Anda ingin mencari lowongan kerja atau mengetahui pekerjaan yang cocok, silakan mulai kembali kapan saja.\"\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        180,
+        300
+      ],
+      "id": "37d8503f-f616-4f9f-af6f-9a3bad89d444",
+      "name": "Other"
+    },
+    {
+      "parameters": {},
+      "type": "@devlikeapro/n8n-nodes-waha.wahaTrigger",
+      "typeVersion": 202502,
+      "position": [
+        -1100,
+        -260
+      ],
+      "id": "ab6e5aae-34a7-4e68-99f9-842be5181d86",
+      "name": "WAHA Trigger",
+      "webhookId": "2f49ec7a-8f09-4fd6-9d5e-95a60ae339e6"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('Merge').item.json.session }}",
+        "chatId": "={{ $('Merge').item.json.payload.from }}",
+        "text": "={{ $('Code').item.json.output }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        1120,
+        20
+      ],
+      "id": "64488718-cfe4-44df-8f39-3b9eda23e3dc",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Stop Typing",
+        "session": "={{ $('Merge').item.json.session }}",
+        "chatId": "={{ $('Merge').item.json.payload.from }}",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        940,
+        20
+      ],
+      "id": "ac433e18-6bd1-49fb-aac4-50c41ca66f17",
+      "name": "Stop Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Start Typing",
+        "requestOptions": {}
+      },
+      "type": "@devlikeapro/n8n-nodes-waha.WAHA",
+      "typeVersion": 202502,
+      "position": [
+        -720,
+        0
+      ],
+      "id": "3a3410ae-2393-4dd0-903f-31ae050bcc51",
+      "name": "Start Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "NK0ME0GWIiLliwdn",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -740,
+        -260
+      ],
+      "id": "9e72305c-b8d5-4f46-b279-6bd2530bb27c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  if (item) {\n    return item;\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        20
+      ],
+      "id": "58b73686-e41c-457f-aaca-44a950baae70",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1024
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -360,
+        1260
+      ],
+      "id": "3948e045-f3e8-4bcf-a0ce-d80cdda7c893",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "bs9XkEgcm8eQrsFX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -440,
+        520
+      ],
+      "id": "a20294a2-c98e-4ad3-8997-a875adac8583",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bs9XkEgcm8eQrsFX",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Supervisor": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Manual",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Job Vacancy",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Job Matching",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Other",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Job Vacancy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Job Matching",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Greetings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Manual",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "Job Vacancy",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Job Matching",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Other",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Document Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Document Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WAHA Trigger": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Start Typing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Vacancy": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stop Typing": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Matching": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Greetings": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Other": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Typing": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Stop Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Document Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Job Vacancy",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Job Matching",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Greetings",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Manual",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Other",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Jakarta",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1d687424-48ec-43f6-99a0-9b80392f1ff9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7474950db47794b0fbf4bae4cb0bfe3d09b95a4be0cbaf02a13b44024fbd835a"
+  },
+  "id": "YxuJiDWTSyQiuruA",
+  "tags": []
+}
